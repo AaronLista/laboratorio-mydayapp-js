@@ -4,23 +4,7 @@ export class LocalStorageReader {
         this.key = key;
 
         if(!localStorage.getItem(this.key)){
-            localStorage.setItem(this.key,JSON.stringify([
-                {
-                    id:"0",
-                    title:"Hola Pais",
-                    completed:false
-                },
-                {
-                    id:"1",
-                    title:"Hola mundo",
-                    completed:false
-                },
-                {
-                    id:"2",
-                    title:"Hola Sistema Solar",
-                    completed:false
-                }
-            ]));
+            localStorage.setItem(this.key,JSON.stringify([]));
             console.log("se creo un nuevo item")
         } 
     }

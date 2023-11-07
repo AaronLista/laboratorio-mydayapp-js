@@ -10,11 +10,23 @@ const mainSection = document.getElementsByClassName('main')[0];
 const footer = document.getElementsByClassName('footer')[0];
 const count = document.getElementsByClassName('todo-count')[0];
 const clearButton = document.getElementsByClassName('clear-completed')[0];
+const filtersButtons = document.getElementsByClassName('filters')[0];
 
-toggleMainFooter();
-renderTasks();
-renderCount();
-renderClear();
+
+addEventListener('hashchange', ()=>{
+    toggleMainFooter();
+    renderTasks();
+    renderCount();
+    renderClear();
+})
+
+addEventListener('load', ()=>{
+    toggleMainFooter();
+    renderTasks();
+    renderCount();
+    renderClear();
+})
+
 
 input.addEventListener('keypress',(e)=>{
     if(e.key === 'Enter'){
@@ -35,6 +47,13 @@ clearButton.addEventListener('click',()=>{
     renderCount();
     renderClear();
     toggleMainFooter();
+})
+
+filtersButtons.addEventListener('click',(e)=>{
+    for (let index = 0; index < filtersButtons.children.length; index++) {
+        filtersButtons.children[index].children[0].className=""
+    }
+    e.target.className = "selected";
 })
 
 function toggleMainFooter(){
@@ -131,9 +150,21 @@ function renderCount(){
     count.innerHTML = `<strong>${itemsLeft.length}</strong>${itemsLeft.length>1? " items": " item"} left`
 }
 
+function filterTasks(){
+    let URLhash = window.location.hash;
+    if(URLhash === "" || URLhash === "#/"){
+        return tasks;
+    } else if(URLhash === "#/pending"){
+        return tasks.filter((t)=>(!t.completed))
+    } else if(URLhash === "#/completed"){
+        return tasks.filter((t)=>(t.completed))
+    }
+}
+
 function renderTasks(){
     tasksList.innerHTML = "";
-    tasks.forEach((task)=>{
+    let filterTask = filterTasks();
+    filterTask.forEach((task)=>{
         let newLi = document.createElement('li');
         let newDiv = document.createElement('div');
         let newCheck = document.createElement('input');

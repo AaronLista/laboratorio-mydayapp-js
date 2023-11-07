@@ -8,9 +8,13 @@ const input = document.getElementsByClassName('new-todo')[0];
 const tasksList = document.getElementsByClassName('todo-list')[0];
 const mainSection = document.getElementsByClassName('main')[0];
 const footer = document.getElementsByClassName('footer')[0];
+const count = document.getElementsByClassName('todo-count')[0];
+const clearButton = document.getElementsByClassName('clear-completed')[0];
 
 toggleMainFooter();
 renderTasks();
+renderCount();
+renderClear();
 
 input.addEventListener('keypress',(e)=>{
     if(e.key === 'Enter'){
@@ -21,10 +25,23 @@ input.addEventListener('keypress',(e)=>{
     }
 })
 
+clearButton.addEventListener('click',()=>{
+    let uncompletedTasks = tasks.filter((t)=>(t.completed));
+    uncompletedTasks.forEach((t)=>{
+        tasks.splice(tasks.indexOf(t),1);
+    })
+    lcReader.updateLocalStorage(tasks)
+    renderTasks();
+    renderCount();
+    renderClear();
+    toggleMainFooter();
+})
+
 function toggleMainFooter(){
     if(tasks.length === 0){
         mainSection.style = 'display: none;'
         footer.style = 'display: none;'
+        clearButton.style = 'display:none;'
     } else {
         mainSection.style = 'display: auto;'
         footer.style = 'display: auto;'
@@ -42,6 +59,7 @@ function createTask(title){
         tasks.push(newTask);
         lcReader.updateLocalStorage(tasks);
         renderTasks();
+        renderCount();
         toggleMainFooter();
     } else {
         let newTask = {
@@ -52,6 +70,7 @@ function createTask(title){
         tasks.push(newTask);
         lcReader.updateLocalStorage(tasks);
         renderTasks();
+        renderCount();
         toggleMainFooter();
     }
 }
@@ -60,6 +79,8 @@ function completeTask(task, li){
     task.completed = !task.completed;
     li.className = task.completed? "completed" : "";
     lcReader.updateLocalStorage(tasks);
+    renderCount();
+    renderClear();
 }
 
 function deleteTask(task){
@@ -67,6 +88,8 @@ function deleteTask(task){
     tasks.splice(index,1);
     lcReader.updateLocalStorage(tasks);
     renderTasks();
+    renderCount();
+    renderClear();
     toggleMainFooter();
 }
 
@@ -92,6 +115,20 @@ function readKey(e,li,task,edit){
             editTask(task,edit.value.trim());
         }
     }
+}
+
+function renderClear(){
+    let itemsLeft = tasks.filter((t)=>(t.completed))
+    if(itemsLeft.length===0){
+        clearButton.style = 'display:none;'
+    } else {
+        clearButton.style = 'display:auto;'
+    }
+}
+
+function renderCount(){
+    let itemsLeft = tasks.filter((t)=>(!t.completed))
+    count.innerHTML = `<strong>${itemsLeft.length}</strong>${itemsLeft.length>1? " items": " item"} left`
 }
 
 function renderTasks(){
@@ -122,10 +159,7 @@ function renderTasks(){
         newLabel.innerText = task.title;
         newLabel.addEventListener('dblclick',()=>{editMode(newLi)})
   
-  
         newEdit.value = task.title;
-  
-  
   
         newDiv.appendChild(newCheck);
         newDiv.appendChild(newLabel);
